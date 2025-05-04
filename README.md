@@ -71,6 +71,7 @@ These contracts are live on the Arbitrum testnet and are structured using upgrad
 ## License
 
 This repository is licensed under the MIT License. See the `LICENSE` file for details.
+By contributing to this project, you agree to the terms outlined in [CLA.md](./CLA.md).
 
 ---
 
