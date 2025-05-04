@@ -8,23 +8,47 @@ Axynom is a decentralized coordination protocol designed to reward meaningful co
 
 ## Contracts Included
 
-### AxynomToken.sol  
+### Core Contracts
+
+#### AxynomToken.sol  
 Upgradeable ERC20 token that serves as the base currency of the Axynom ecosystem. All GP (Growth Point) redemptions and reward flows are settled in AXY.
 
-### AxynomStaking.sol  
+#### AxynomStaking.sol  
 Staking contract supporting fixed lock periods, tiered APYs, early withdrawal penalties, reward boosts, and proxy-safe upgradeability.
 
-### AxynomTreasury.sol  
+#### AxynomTreasury.sol  
 Treasury contract designed to hold protocol-owned assets and provide funding for staking and PoG reward pools. Will be governed by a DAO in future phases.
 
-### ContributionRegistry.sol  
+#### ContributionRegistry.sol  
 Registers all contributor submissions. Tracks contribution metadata, approval status, and GP awarded. Serves as the source of truth for on-chain contribution history.
 
-### PoG.sol  
+#### PoG.sol  
 Implements the Proof-of-Growth reward system. Distributes GP points based on validated contributions. Delegates reward math and logic to modular libraries.
 
-### RewardsPool.sol  
+#### RewardsPool.sol  
 Handles reward liquidity and payout coordination for staking and PoG systems. Ensures sustainable distribution by comparing available reserves with protocol-wide debt.
+
+---
+
+### Supporting Libraries & Modules
+
+#### PenaltyLogic.sol  
+Calculates early withdrawal penalties based on the staker’s lock period and time elapsed. Routes penalized funds to the Treasury contract.
+
+#### PoGLogic.sol  
+Contains the reward logic for the PoG system, including dynamic GP assignments based on contribution metadata.
+
+#### PoolInteractions.sol  
+Abstracts internal contract calls to the staking and rewards pools, ensuring safe interactions and minimizing duplication.
+
+#### RewardRouter.sol  
+Manages multi-token reward routing between systems, including potential future integrations and extensions.
+
+#### StakeLogic.sol  
+Encapsulates stake tracking, lock period enforcement, APY logic, and compound staking behavior.
+
+#### TreasuryInvestments.sol  
+Handles on-chain treasury investment strategies and fund flow tracking. Supports protocol-owned yield optimization logic.
 
 ---
 
