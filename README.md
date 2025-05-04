@@ -77,7 +77,7 @@ This repository is licensed under the MIT License. See the `LICENSE` file for de
 ## Additional Resources
 
 - Project Website: [https://axynom.com](https://axynom.com)
-- Documentation: [https://docs.axynom.com](https://docs.axynom.com)
+- Documentation: [https://axynom.gitbook.io/axynom](https://axynom.gitbook.io/axynom)
 - Arbitrum Testnet Explorer: [https://testnet.arbiscan.io](https://testnet.arbiscan.io)
 
 ---
