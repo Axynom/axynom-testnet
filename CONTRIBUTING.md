@@ -25,4 +25,4 @@ If you discover a bug or vulnerability, do **not** open a public issue. Instead,
 
 ## License
 
-By contributing, you agree that your code will be licensed under the MIT License, unless otherwise specified.
+By contributing to this project, you agree to the terms outlined in [CLA.md](./CLA.md).
