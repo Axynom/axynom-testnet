@@ -1,6 +1,5 @@
-
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.25;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -9,7 +8,9 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../libraries/PoGLogic.sol";
 
 interface IContributionRegistry {
-    function totalPoints(address user) external view returns (uint256);
+    function unclaimedPoints(address user) external view returns (uint256);
+    function consumePoints(address user, uint256 amount) external;
+    function grantRole(bytes32 role, address account) external;
 }
 
 interface IRewardsPool {
@@ -19,21 +20,17 @@ interface IRewardsPool {
 contract PoG is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
-    // ────────────── MUST PRESERVE ORDER ──────────────
     IContributionRegistry public contributionRegistry;
     IRewardsPool public rewardsPool;
     address public rewardToken;
     uint256 public rewardMultiplier;
-    mapping(address => uint256) public gpClaimed;
 
-    // ────────────── APPENDED SAFELY ──────────────
-    mapping(address => uint256) public unredeemedGP;
-
-    // ────────────── EVENTS ──────────────
-    event GPGranted(address indexed user, uint256 amount);
-    event GPBurned(address indexed user, uint256 amount);
     event GPRedeemed(address indexed user, uint256 gpAmount, uint256 rewardAmount);
     event MultiplierUpdated(uint256 newMultiplier);
+
+    // ------------------------------------------------------------------------
+    // ⚙️ Initializer
+    // ------------------------------------------------------------------------
 
     function initialize(
         address _registry,
@@ -55,35 +52,44 @@ contract PoG is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         _grantRole(MANAGER_ROLE, msg.sender);
     }
 
-    function grantGP(address user, uint256 amount) external onlyRole(MANAGER_ROLE) {
-        gpClaimed[user] += amount;
-        unredeemedGP[user] += amount;
-        emit GPGranted(user, amount);
-    }
-
-    function burnUnredeemedGP(address user, uint256 amount) external onlyRole(MANAGER_ROLE) {
-        require(unredeemedGP[user] >= amount, "Insufficient GP");
-        unredeemedGP[user] -= amount;
-        emit GPBurned(user, amount);
-    }
+    // ------------------------------------------------------------------------
+    // 🪙 GP Redemption
+    // ------------------------------------------------------------------------
 
     function redeemGP(uint256 amount) external {
-        require(unredeemedGP[msg.sender] >= amount, "Not enough GP");
-        unredeemedGP[msg.sender] -= amount;
+        require(amount > 0, "Amount must be positive");
 
+        uint256 available = contributionRegistry.unclaimedPoints(msg.sender);
+        require(available >= amount, "Not enough GP");
+
+        // Secure GP burn
+        contributionRegistry.consumePoints(msg.sender, amount);
+
+        // Calculate and distribute reward
         uint256 reward = PoGLogic.calculateReward(amount, rewardMultiplier);
         rewardsPool.distributeReward(rewardToken, msg.sender, reward);
 
         emit GPRedeemed(msg.sender, amount, reward);
     }
 
+    function estimateReward(uint256 amount) external view returns (uint256) {
+        return PoGLogic.calculateReward(amount, rewardMultiplier);
+    }
+
+    // ------------------------------------------------------------------------
+    // 🛠️ Admin Functions
+    // ------------------------------------------------------------------------
+
     function setMultiplier(uint256 _multiplier) external onlyRole(MANAGER_ROLE) {
         rewardMultiplier = _multiplier;
         emit MultiplierUpdated(_multiplier);
     }
 
-    function getGPStats(address user) external view returns (uint256 lifetime, uint256 unredeemed) {
-        return (gpClaimed[user], unredeemedGP[user]);
+    function grantRedeemerRole() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        contributionRegistry.grantRole(
+            keccak256("REDEEMER_ROLE"),
+            address(this)
+        );
     }
 
     function _authorizeUpgrade(address newImpl) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
