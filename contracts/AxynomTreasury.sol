@@ -2,8 +2,8 @@
 pragma solidity ^0.8.25;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
@@ -17,7 +17,7 @@ contract AxynomTreasury is
     PausableUpgradeable,
     UUPSUpgradeable
 {
-    using SafeERC20Upgradeable for IERC20Upgradeable;
+    using SafeERC20 for IERC20;
 
     // ───────────────────────────────────────────────
     // 🔐 Roles
@@ -82,7 +82,7 @@ contract AxynomTreasury is
 
         require(authorized, "Not authorized");
 
-        IERC20Upgradeable(token).safeTransfer(to, amount);
+        IERC20(token).safeTransfer(to, amount);
         emit TreasuryTransfer(token, to, amount);
     }
 
@@ -103,7 +103,7 @@ contract AxynomTreasury is
     }
 
     function deposit(address token, uint256 amount) external {
-        IERC20Upgradeable(token).safeTransferFrom(msg.sender, address(this), amount);
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
         emit TreasuryReceived(msg.sender, amount);
     }
 
@@ -140,7 +140,7 @@ contract AxynomTreasury is
         require(token != address(0), "Invalid token");
         require(rewardsPool != address(0), "Rewards pool not set");
 
-        IERC20Upgradeable(token).safeTransfer(rewardsPool, amount);
+        IERC20(token).safeTransfer(rewardsPool, amount);
         emit RewardsPoolRefilled(token, amount, rewardsPool);
     }
 
@@ -170,7 +170,7 @@ contract AxynomTreasury is
         monthlySpent[currentMonth] += amount;
         require(monthlySpent[currentMonth] <= monthlyWalletCap, "Over monthly cap");
 
-        IERC20Upgradeable(token).safeTransfer(investmentWallet, amount);
+        IERC20(token).safeTransfer(investmentWallet, amount);
         emit WalletAllocation(token, investmentWallet, amount, reason);
     }
 
@@ -191,8 +191,8 @@ contract AxynomTreasury is
 
     function recoverStuckERC20(address token, address to) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(to != address(0), "Invalid recipient");
-        uint256 balance = IERC20Upgradeable(token).balanceOf(address(this));
-        IERC20Upgradeable(token).safeTransfer(to, balance);
+        uint256 balance = IERC20(token).balanceOf(address(this));
+        IERC20(token).safeTransfer(to, balance);
     }
 
     // ───────────────────────────────────────────────

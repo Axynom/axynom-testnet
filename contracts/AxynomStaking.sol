@@ -1,26 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./libraries/StakeLogic.sol";
 import "./libraries/StakingUtils.sol";
 import "./libraries/PoolInteractions.sol";
 
 contract AxynomStaking is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgradeable, UUPSUpgradeable {
-    using SafeERC20Upgradeable for IERC20Upgradeable;
+    using SafeERC20 for IERC20;
     using StakeLogic for StakeLogic.StakeInfo;
     using StakingUtils for uint256;
 
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
-    IERC20Upgradeable public axynomToken;
+    IERC20 public axynomToken;
     address public rewardsPool;
     address public treasury;
 
@@ -72,7 +72,7 @@ contract AxynomStaking is Initializable, AccessControlUpgradeable, ReentrancyGua
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
 
-        axynomToken = IERC20Upgradeable(_token);
+        axynomToken = IERC20(_token);
         rewardsPool = _rewardsPool;
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -206,7 +206,7 @@ contract AxynomStaking is Initializable, AccessControlUpgradeable, ReentrancyGua
 
     function setToken(address newToken) external onlyRole(MANAGER_ROLE) {
         require(newToken != address(0), "Invalid token");
-        axynomToken = IERC20Upgradeable(newToken);
+        axynomToken = IERC20(newToken);
     }
 
     function pause() external onlyRole(MANAGER_ROLE) {

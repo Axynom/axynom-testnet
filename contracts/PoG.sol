@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import "../libraries/PoGLogic.sol";
+import "./libraries/PoGLogic.sol";
 
 interface IContributionRegistry {
     function unclaimedPoints(address user) external view returns (uint256);

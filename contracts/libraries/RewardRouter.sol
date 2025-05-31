@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 library RewardRouter {
-    using SafeERC20Upgradeable for IERC20Upgradeable;
+    using SafeERC20 for IERC20;
 
     /// @notice Transfers reward tokens from reward pool to user
     function sendReward(
@@ -15,6 +15,6 @@ library RewardRouter {
         uint256 amount
     ) internal {
         require(token != address(0) && rewardsPool != address(0), "Invalid token or pool");
-        IERC20Upgradeable(token).safeTransferFrom(rewardsPool, user, amount);
+        IERC20(token).safeTransferFrom(rewardsPool, user, amount);
     }
 }
