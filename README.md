@@ -52,6 +52,41 @@ Handles on-chain treasury investment strategies and fund flow tracking. Supports
 
 ---
 
+## Steps to Start the project
+
+### Clone the project using:
+
+```
+git clone <repo url>
+
+```
+
+### Install necessary dependencies
+
+```
+npm install
+
+```
+
+### Create a .env file using .env.example
+
+```
+RPC_URL=<https://arbitrum-sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID>
+PRIVATE_KEY=<YOUR_PRIVATE_KEY>
+
+```
+
+### Run deployment script
+
+```
+npx hardhat run scripts/deploy.ts --network <network>
+
+```
+
+*Note*: *Change <network> to "localhost" if using hardhat environment or "arbitrumSepolia" if using Arbitrum Sepolia Testnet*
+
+---
+
 ## Deployment Notes
 
 These contracts are live on the Arbitrum testnet and are structured using upgradeable proxy patterns and modular logic libraries. Each contract is written with upgrade safety, role-based permissions, and audit-readiness in mind.
